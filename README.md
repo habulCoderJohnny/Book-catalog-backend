@@ -1,4 +1,4 @@
-# Book-catalog-backend
+# Build a Simple Book Catalog Backend Application using Node-Express, Mongodb & Mongoose and Typescript (Backend Category)
 ** Filter Implementation
 
 In this project, students have the option to implement the filter functionality both on the frontend side or on the backend side. But 
