@@ -57,7 +57,7 @@ const run = async () => {
   
         const result = await bookCollection.updateOne(
           { _id: ObjectId(bookId) },
-  
+          { $push: { reviews: review } }
         );
         if (result.modifiedCount !== 1) {
           res.json({ error: 'Book not found or review not added' });
@@ -69,7 +69,7 @@ const run = async () => {
         const bookId = req.params.id;
         const result = await bookCollection.findOne(
           { _id: ObjectId(bookId) },
-
+          { projection: { _id: 0, reviews: 1 } }
         );
         if (result) {
           res.json(result);
@@ -101,7 +101,7 @@ const run = async () => {
   
         const result = await bookCollection.findOneAndUpdate(
           { _id: ObjectId(bookId) },
-
+          { $pull: { reviews: { userEmail } } }
         );
   
         if (result) {
