@@ -18,10 +18,10 @@ const run = async () => {
         const db = client.db('Boinama');
         const bookCollection = db.collection('books');
      
-
+        
         // bookCollection - CRUD operation
         app.get('/books', async (req, res) => {
-            onst cursor = bookCollection.find({}).sort({ publicationDate: -1 });;c
+            const cursor = bookCollection.find({}).sort({ publicationDate: -1 });;
             const book = await cursor.toArray();
             res.send({ status: true, data: book });
         });
@@ -49,6 +49,68 @@ const run = async () => {
             const result = await bookCollection.deleteOne({ _id: ObjectId(id) });
             res.send(result);
         });
+        
+      // reviewCollection - CRUD operation
+      app.post('/review/:id', async (req, res) => {
+        const bookId = req.params.id;
+        const review = req.body;
+  
+        const result = await bookCollection.updateOne(
+          { _id: ObjectId(bookId) },
+  
+        );
+        if (result.modifiedCount !== 1) {
+          res.json({ error: 'Book not found or review not added' });
+          return;
+        }
+        res.json({ message: 'Review added successfully' });
+      });
+      app.get('/review/:id', async (req, res) => {
+        const bookId = req.params.id;
+        const result = await bookCollection.findOne(
+          { _id: ObjectId(bookId) },
+
+        );
+        if (result) {
+          res.json(result);
+        } else {
+          res.status(404).json({ error: 'Book not found' });
+        }
+      });
+
+      app.patch('/review/:id/user/:email', async (req, res) => {
+        const bookId = req.params.id;
+        const userEmail = req.params.email
+        const updatedReview = req.body.review
+  
+        const result = await bookCollection.findOneAndUpdate(
+          { _id: ObjectId(bookId), "reviews.userEmail": userEmail },
+          { $set: { "reviews.$.review": updatedReview } }
+        );
+  
+        if (result) {
+          return res.json(result);
+        }
+  
+        res.status(404).json({ error: 'Book not found' });
+      });
+  
+      app.delete('/review/:id/user/:email', async (req, res) => {
+        const bookId = req.params.id;
+        const userEmail = req.params.email
+  
+        const result = await bookCollection.findOneAndUpdate(
+          { _id: ObjectId(bookId) },
+
+        );
+  
+        if (result) {
+          return res.json(result);
+        }
+  
+        res.status(404).json({ error: 'Book not found' });
+      });
+  
 
     } finally {
 
